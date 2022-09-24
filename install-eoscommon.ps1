@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 if (!$Credential) { $Credential = Get-Credential }
 $BaseUri = "https://nuget.eos-solutions.it"
 
-$r = Invoke-RestMethod "https://nuget.eos-solutions.it/nuget/PS/packages" -Credential $Credential -UseBasicParsing | `
+$r = Invoke-RestMethod "$BaseUri/nuget/PS/packages" -Credential $Credential -UseBasicParsing | `
     Where-Object { 
     $_.title.InnerText -eq "Eos.Common" 
 } | `
@@ -27,8 +27,10 @@ $files = @(
     "Functions%2FPSGallery%2FUnregister-EosPSGallery.ps1"
 )
 foreach ($file in $files) {
-    $uri = "$BaseUri/package-files/download?packageId=$ModuleName&version=$ModuleVersion&feedName=PS&path=$file"
-    Invoke-WebRequest ((Invoke-WebRequest -Uri $uri -Headers $header).Content)
+    $uri = "$BaseUri/package-files/download?packageId=$ModuleName&version=$ModuleVersion&feedName=PS&path=$($file)"
+    $Content = [Text.Encoding]::UTF8.GetString((Invoke-WebRequest -Uri $uri -Headers $header).RawContentStream.ToArray())
+    if ([int] $Content[0] -eq 65279) { $Content = $Content.Substring(1) } # fix encoding issue
+    Invoke-Expression $Content
 }
 
 Write-Host "Installing"
