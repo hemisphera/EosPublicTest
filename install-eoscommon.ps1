@@ -1,8 +1,8 @@
-$ErrorActionPreference = "Stop"
 param(
     [Parameter(Mandatory = $false)]
     [pscredential] $Credential
 )
+$ErrorActionPreference = "Stop"
 if (!$Credential) { $Credential = Get-Credential }
 $BaseUri = "https://nuget.eos-solutions.it"
 
