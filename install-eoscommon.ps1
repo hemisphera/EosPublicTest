@@ -1,13 +1,15 @@
+$ErrorActionPreference = "Stop"
+
 if (!$Credential) { $Credential = Get-Credential }
 $BaseUri = "https://nuget.eos-solutions.it"
 
 $r = Invoke-RestMethod "https://nuget.eos-solutions.it/nuget/PS/packages" -Credential $Credential -UseBasicParsing | `
     Where-Object { 
-        $_.title.InnerText -eq "Eos.Common" 
-    } | `
+    $_.title.InnerText -eq "Eos.Common" 
+} | `
     Sort-Object {
-        [Version] $_.properties.version.InnerText
-    } | `
+    [Version] $_.properties.version.InnerText
+} | `
     Select-Object -Last 1
 
 $ModuleName = $r.title.InnerText
@@ -26,8 +28,7 @@ $files = @(
 )
 foreach ($file in $files) {
     $uri = "$BaseUri/package-files/download?packageId=$ModuleName&version=$ModuleVersion&feedName=PS&path=$file"
-    $r = [Text.Encoding]::UTF8.GetString((Invoke-WebRequest $uri -Headers $header).RawContentStream.ToArray())
-    if ([int] $r[0] -eq 65279) { $r = $r.Substring(1) } # fix an encoding issue
+    Invoke-WebRequest ((Invoke-WebRequest $uri -Headers $header).Content)
     Invoke-Expression $r
 }
 
