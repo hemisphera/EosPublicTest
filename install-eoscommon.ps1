@@ -29,7 +29,6 @@ $files = @(
 foreach ($file in $files) {
     $uri = "$BaseUri/package-files/download?packageId=$ModuleName&version=$ModuleVersion&feedName=PS&path=$file"
     Invoke-WebRequest ((Invoke-WebRequest $uri -Headers $header).Content)
-    Invoke-Expression $r
 }
 
 Write-Host "Installing"
