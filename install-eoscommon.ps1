@@ -1,4 +1,4 @@
-﻿if (!$Credential) { $Credential = Get-Credential }
+if (!$Credential) { $Credential = Get-Credential }
 $BaseUri = "https://nuget.eos-solutions.it"
 
 $r = Invoke-RestMethod "https://nuget.eos-solutions.it/nuget/PS/packages" -Credential $Credential -UseBasicParsing | `
